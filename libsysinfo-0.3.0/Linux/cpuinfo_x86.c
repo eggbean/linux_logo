@@ -309,14 +309,19 @@ static void fixup_model_amd(struct cpu_info_type *cpu_info,
 		switch(cpu_info->model) {
 			/* Zen */
 			case 1: /* Naples, Whitehaven, Summit Ridge, Snowy Owl */
-			case 17: /* Raven Ridge */
-			case 24: /* Branded Kestrel, Dali */
+			case 17: /* Raven Ridge, Great Horned Owl */
+			case 24: /* Branded Kestrel */
+			case 32: /* Dali */
 			/* Zen+ */
-			case 8:	/* Pinnacle Ridge */
-			//case 24:/* Picasso */
+			case 8:	/* Colfax, Pinnacle Ridge */
+			/*case 24:*//* Picasso, why the same as Branded Kestrel? */
 			/* Zen2 */
 			case 49:  /* Rome, Castle Peak */
+			case 71:  /* Xbox Series X */
+			case 96:  /* Renoir, Grey Hawk */
+			case 104: /* Lucienne */
 			case 113: /* Matisse */
+			case 144: /* Van Gogh */
 
 			default: break;
 		}
@@ -326,7 +331,30 @@ static void fixup_model_amd(struct cpu_info_type *cpu_info,
 		grab_amd_to_space(model_string,base_type,BUFSIZ);
 
 	}
+	else if (cpu_info->family==24) {
+		/* Joint partnership with China? */
+		/* Dhyana/Hygon is model 0? */
 
+		/* Grab from AMD to space */
+
+		grab_amd_to_space(model_string,base_type,BUFSIZ);
+	}
+	else if (cpu_info->family==25) {
+		/* Family 19h -- Zen3 */
+
+		switch(cpu_info->model) {
+			case 1:  /* Milan */
+			case 33: /* Vermeer */
+			case 64: /* Rembrant */
+			case 80: /* Cezanne */
+			default: break;
+		}
+
+		/* Grab from AMD to space */
+
+		grab_amd_to_space(model_string,base_type,BUFSIZ);
+
+	}
 	else {
 		/* Unknown, try guessing */
 		grab_amd_to_space(model_string,base_type,BUFSIZ);
@@ -500,7 +528,9 @@ static void fixup_model_centaur(struct cpu_info_type *cpu_info,
 	/* calling them "Centaur VIA" chips                */
 	if (strstr(model_string,"VIA")!=NULL) {
 		strncpy(cpu_info->chip_vendor,"VIA",4);
-		strncpy(cpu_info->chip_type,model_string+4,SYSINFO_CHIP_TYPE_SIZE);
+		strncpy(cpu_info->chip_type,model_string+4,
+			SYSINFO_CHIP_TYPE_SIZE);
+		cpu_info->chip_type[SYSINFO_CHIP_TYPE_SIZE-1]=0;
 	}
 
 	/* Esther */
@@ -842,10 +872,21 @@ static void fixup_model_intel(struct cpu_info_type *cpu_info,
 				strncpy(base_type,"Tigerlake",10);
 				break;
 
+			/* Alderlake */
+			case 151: /* Alderlake S */
+			case 154: /* Alderlake P */
+				strncpy(base_type,"Alderlake",10);
+				break;
+
 			/* Cometlake */
 			case 165: /* Cometlake */
 			case 166: /* Cometlake L */
 				strncpy(base_type,"Cometlake",10);
+				break;
+
+			/* Rocketlake */
+			case 167: /* Rocketlake S L */
+				strncpy(base_type,"Rocketlake",11);
 				break;
 
 			default: strncpy(base_type,"Unknown",8); break;
